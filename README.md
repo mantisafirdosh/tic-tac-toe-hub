@@ -1,16 +1,31 @@
-# React + Vite
+# 🎮 Tic Tac Toe Hub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive, and interactive **Tic Tac Toe Hub** that allows players to enjoy the classic game across multiple modes. Whether you want to challenge a friend locally, play against an intelligent AI, or jump into a real-time online match, this hub has you covered.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Features
 
-## React Compiler
+* **🌐 Online Rooms:** Create or join custom rooms using unique room codes. Play with friends remotely with auto-sync updates.
+* **🤖 Play vs AI:** Test your skills against a computer opponent.
+* **👥 2 Players (Local):** Pass-and-play mode to challenge a friend sitting right next to you.
+* **⚡ Real-Time Sync:** Features seamless state management to keep the shared board instantly updated.
+* **🎨 Modern UI:** A sleek, dark-themed user interface with neon accents for an immersive gaming experience.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **Frontend:** React / Vite (HTML5, CSS3, JavaScript/TypeScript)
+* **Styling:** Custom modern dark-theme CSS
+
+---
+
+## 📦 Installation & Getting Started
+
+Follow these steps to run the project locally:
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/mantisafirdosh/tic-tac-toe-hub.git](https://github.com/mantisafirdosh/tic-tac-toe-hub.git)
+   cd tic-tac-toe-hub
