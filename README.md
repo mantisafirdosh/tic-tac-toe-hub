@@ -19,13 +19,3 @@ A modern, responsive, and interactive **Tic Tac Toe Hub** that allows players to
 * **Frontend:** React / Vite (HTML5, CSS3, JavaScript/TypeScript)
 * **Styling:** Custom modern dark-theme CSS
 
----
-
-## 📦 Installation & Getting Started
-
-Follow these steps to run the project locally:
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/mantisafirdosh/tic-tac-toe-hub.git](https://github.com/mantisafirdosh/tic-tac-toe-hub.git)
-   cd tic-tac-toe-hub
