@@ -1,24 +1,16 @@
-# 🎮 Tic Tac Toe Hub
+# React + Vite
 
-A modern, responsive, and interactive **Tic Tac Toe Hub** that allows players to enjoy the classic game across multiple modes. Whether you want to challenge a friend locally, play against an intelligent AI, or jump into a real-time online match, this hub has you covered.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
----
+Currently, two official plugins are available:
 
-## 🚀 Features
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-* **🌐 Online Rooms:** Create or join custom rooms using unique room codes. Play with friends remotely with auto-sync updates.
-* **🤖 Play vs AI:** Test your skills against a computer opponent.
-* **👥 2 Players (Local):** Pass-and-play mode to challenge a friend sitting right next to you.
-* **⚡ Real-Time Sync:** Features seamless state management to keep the shared board instantly updated.
-* **🎨 Modern UI:** A sleek, dark-themed user interface with neon accents for an immersive gaming experience.
+## React Compiler
 
----
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## 🛠️ Tech Stack
+## Expanding the ESLint configuration
 
-* **Frontend:** React / Vite (HTML5, CSS3, JavaScript/TypeScript)
-* **Styling:** Custom modern dark-theme CSS
-
----
-
-
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
