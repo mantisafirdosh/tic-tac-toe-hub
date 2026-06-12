@@ -1,152 +1,162 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
+
+function createSoundPlayer(soundOnRef) {
+  return function play(src) {
+    if (!soundOnRef.current) return;
+    const audio = new Audio(src);
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+  };
+}
+
+// Very simple AI: pick first empty cell
+function pickAiMove(board) {
+  for (let i = 0; i < board.length; i++) {
+    if (!board[i]) return i;
+  }
+  return null;
+}
 
 function VsAI() {
   const [board, setBoard] = useState(Array(9).fill(null));
-  const [currentPlayer, setCurrentPlayer] = useState("X");
-  const [winner, setWinner] = useState(null);
-  const [aiThinking, setAiThinking] = useState(false);
+  const [xIsNext, setXIsNext] = useState(true); // player is X
+  const [status, setStatus] = useState("Your turn (X)");
+  const [thinking, setThinking] = useState(false);
 
-  const checkGameStatus = (b) => {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (const [a, bIdx, c] of lines) {
-      if (b[a] && b[a] === b[bIdx] && b[a] === b[c]) {
-        return { type: "winner", player: b[a] };
-      }
-    }
-    if (b.every((cell) => cell !== null)) {
-      return { type: "draw" };
-    }
-    return null;
-  };
+  const [soundOn, setSoundOn] = useState(true);
+  const soundOnRef = useRef(soundOn);
+  soundOnRef.current = soundOn;
+  const playSound = createSoundPlayer(soundOnRef);
 
-  const getAvailableMoves = (b) =>
-    b
-      .map((val, idx) => (val === null ? idx : null))
-      .filter((idx) => idx !== null);
+  const [lastMoveIndex, setLastMoveIndex] = useState(null);
 
-  const evaluateBoard = (b) => {
-    const result = checkGameStatus(b);
-    if (!result) return 0;
-    if (result.type === "draw") return 0;
-    if (result.type === "winner") {
-      if (result.player === "O") return 10;
-      if (result.player === "X") return -10;
-    }
-    return 0;
-  };
-
-  const minimax = (b, depth, isMax) => {
-    const score = evaluateBoard(b);
-    if (score === 10 || score === -10) return score;
-    if (getAvailableMoves(b).length === 0) return 0;
-
-    if (isMax) {
-      let best = -Infinity;
-      for (const move of getAvailableMoves(b)) {
-        const newBoard = [...b];
-        newBoard[move] = "O";
-        best = Math.max(best, minimax(newBoard, depth + 1, false));
-      }
-      return best - depth;
-    } else {
-      let best = Infinity;
-      for (const move of getAvailableMoves(b)) {
-        const newBoard = [...b];
-        newBoard[move] = "X";
-        best = Math.min(best, minimax(newBoard, depth + 1, true));
-      }
-      return best + depth;
-    }
-  };
-
-  const findBestMove = (b) => {
-    let bestVal = -Infinity;
-    let bestMove = null;
-    for (const move of getAvailableMoves(b)) {
-      const newBoard = [...b];
-      newBoard[move] = "O";
-      const moveVal = minimax(newBoard, 0, false);
-      if (moveVal > bestVal) {
-        bestVal = moveVal;
-        bestMove = move;
-      }
-    }
-    return bestMove;
-  };
+  const winner = calculateWinner(board);
 
   useEffect(() => {
-    if (winner) return;
-    if (currentPlayer === "O") {
-      setAiThinking(true);
-      const id = setTimeout(() => {
-        setBoard((prev) => {
-          const b = [...prev];
-          const move = findBestMove(b);
-          if (move === null || move === undefined) return b;
-          b[move] = "O";
-          const status = checkGameStatus(b);
-          if (status) {
-            if (status.type === "winner") setWinner(status.player);
-            else if (status.type === "draw") setWinner("draw");
-          } else {
-            setCurrentPlayer("X");
-          }
-          return b;
-        });
-        setAiThinking(false);
-      }, 500);
-      return () => clearTimeout(id);
-    }
-  }, [currentPlayer, winner]);
-
-  const handleClick = (index) => {
-    if (
-      board[index] ||
-      winner ||
-      currentPlayer !== "X" ||
-      aiThinking
-    ) {
-      return;
-    }
-    const newBoard = [...board];
-    newBoard[index] = "X";
-    setBoard(newBoard);
-    const status = checkGameStatus(newBoard);
-    if (status) {
-      if (status.type === "winner") setWinner(status.player);
-      else if (status.type === "draw") setWinner("draw");
+    if (winner) {
+      const who =
+        winner === "X" ? "You win! (X)" : "AI wins! (O)";
+      setStatus(who);
+      playSound("/sounds/win.mp3");
+      setThinking(false);
+    } else if (board.every((cell) => cell !== null)) {
+      setStatus("Draw!");
+      playSound("/sounds/reset.mp3");
+      setThinking(false);
+    } else if (xIsNext) {
+      setStatus("Your turn (X)");
     } else {
-      setCurrentPlayer("O");
+      setStatus("AI is thinking...");
     }
+  }, [board, xIsNext, winner, playSound]);
+
+  const handlePlayerClick = (index) => {
+    if (!xIsNext || winner || board[index]) return;
+    const squares = board.slice();
+    squares[index] = "X";
+    setBoard(squares);
+    setXIsNext(false);
+    setLastMoveIndex(index);
+    playSound("/sounds/move.mp3");
+    setThinking(true);
   };
 
-  const resetGame = () => {
+  // Trigger AI move when it's O's turn
+  useEffect(() => {
+    if (winner || board.every((c) => c !== null)) return;
+    if (xIsNext) return;
+
+    const timer = setTimeout(() => {
+      const aiIndex = pickAiMove(board);
+      if (aiIndex == null) {
+        setThinking(false);
+        return;
+      }
+      const squares = board.slice();
+      if (!squares[aiIndex]) {
+        squares[aiIndex] = "O";
+        setBoard(squares);
+        setXIsNext(true);
+        setLastMoveIndex(aiIndex);
+        playSound("/sounds/move.mp3");
+      }
+      setThinking(false);
+    }, 500); // AI delay
+
+    return () => clearTimeout(timer);
+  }, [xIsNext, board, winner, playSound]);
+
+  const handleReset = () => {
     setBoard(Array(9).fill(null));
-    setWinner(null);
-    setCurrentPlayer("X");
-    setAiThinking(false);
-  };
-
-  const getStatusMessage = () => {
-    if (winner === "draw") return "It's a draw!";
-    if (winner === "X") return "You win!";
-    if (winner === "O") return "AI wins!";
-    return currentPlayer === "X" ? "Your turn" : "AI is thinking...";
+    setXIsNext(true);
+    setStatus("Your turn (X)");
+    setThinking(false);
+    setLastMoveIndex(null);
+    playSound("/sounds/reset.mp3");
   };
 
   return (
     <div className="page-layout">
       <div className="page-left">
         <h2>Play vs AI</h2>
+        <p style={{ maxWidth: 260 }}>
+          You play as X, a simple AI plays as O. Try to beat it!
+        </p>
+
+        <div style={{ marginTop: "12px" }}>
+          <div style={{ marginBottom: "8px" }}>
+            <strong>Status:</strong>
+            <div>{status}</div>
+          </div>
+
+          <div className="button-row">
+            <button className="primary-btn" onClick={handleReset}>
+              Reset Game
+            </button>
+          </div>
+
+          <div style={{ marginTop: "8px", fontSize: "0.9rem" }}>
+            <label>
+              <input
+                type="checkbox"
+                checked={soundOn}
+                onChange={(e) => setSoundOn(e.target.checked)}
+                style={{ marginRight: "6px" }}
+              />
+              Enable sound effects
+            </label>
+          </div>
+
+          {thinking && (
+            <div style={{ marginTop: "6px", fontSize: "0.85rem", color: "#ccc" }}>
+              AI is thinking...
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="page-right">
+        <h3>Board</h3>
         <div className="board-grid">
           {board.map((cell, index) => {
             const filledClass =
@@ -155,41 +165,18 @@ function VsAI() {
                 : cell === "O"
                 ? "filled-o"
                 : "";
-            const disabled =
-              !!cell ||
-              !!winner ||
-              currentPlayer !== "X" ||
-              aiThinking;
+            const justPlayedClass =
+              index === lastMoveIndex && cell !== null ? "just-played" : "";
             return (
               <div
                 key={index}
-                className={`board-cell ${filledClass} ${
-                  disabled ? "disabled" : ""
-                }`}
-                onClick={() => handleClick(index)}
+                className={`board-cell ${filledClass} ${justPlayedClass}`}
+                onClick={() => handlePlayerClick(index)}
               >
                 {cell}
               </div>
             );
           })}
-        </div>
-
-        <div className="status-text">{getStatusMessage()}</div>
-
-        <div className="button-row">
-          <button className="primary-btn" onClick={resetGame}>
-            New Game
-          </button>
-        </div>
-      </div>
-
-      <div className="page-right">
-        <div className="mode-panel">
-          <h3>Tips</h3>
-          <p style={{ fontSize: "0.9rem" }}>
-            You are always X; AI is O. AI plays optimally, so try to
-            create forks and block its lines.
-          </p>
         </div>
       </div>
     </div>
